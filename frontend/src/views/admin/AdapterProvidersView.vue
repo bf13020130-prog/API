@@ -38,6 +38,52 @@
         </div>
       </section>
 
+      <section class="rounded-lg border border-teal-100 bg-gradient-to-br from-teal-50 via-white to-amber-50 p-5 shadow-sm dark:border-teal-900/40 dark:from-dark-900 dark:via-dark-900 dark:to-stone-950">
+        <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <p class="text-xs font-bold uppercase text-teal-700 dark:text-teal-300">
+              {{ t('admin.adapterProviders.native.kicker') }}
+            </p>
+            <h3 class="mt-1 text-lg font-semibold text-gray-950 dark:text-white">
+              {{ t('admin.adapterProviders.native.title') }}
+            </h3>
+            <p class="mt-2 max-w-3xl text-sm leading-6 text-gray-600 dark:text-gray-300">
+              {{ t('admin.adapterProviders.native.description') }}
+            </p>
+          </div>
+          <div class="rounded-lg border border-teal-200 bg-white/80 px-3 py-2 text-xs font-medium text-teal-800 shadow-sm dark:border-teal-800/60 dark:bg-dark-800/80 dark:text-teal-200">
+            {{ t('admin.adapterProviders.native.routingRule') }}
+          </div>
+        </div>
+
+        <div class="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <div
+            v-for="lane in nativeProviderLanes"
+            :key="lane.name"
+            class="rounded-lg border border-white/80 bg-white/85 p-4 shadow-sm ring-1 ring-gray-900/5 dark:border-dark-700 dark:bg-dark-800/80"
+          >
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-sm font-semibold text-gray-950 dark:text-white">{{ lane.name }}</p>
+                <p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">{{ lane.description }}</p>
+              </div>
+              <span class="rounded-md bg-teal-100 px-2 py-1 text-[11px] font-semibold text-teal-800 dark:bg-teal-900/30 dark:text-teal-200">
+                {{ t('admin.adapterProviders.native.nativeBadge') }}
+              </span>
+            </div>
+            <div class="mt-4 flex flex-wrap gap-1.5">
+              <span
+                v-for="capability in lane.capabilities"
+                :key="capability"
+                class="rounded-md bg-gray-100 px-2 py-1 text-[11px] font-medium text-gray-700 dark:bg-dark-700 dark:text-gray-200"
+              >
+                {{ capability }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section class="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-dark-700 dark:bg-dark-900">
         <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
           <div>
@@ -810,6 +856,29 @@ const websocketCount = computed(() => adapterRequests.value.filter((request) => 
 )).length)
 
 const operatorNeedsAttention = computed(() => summary.value.invalid > 0 || recentFailedCount.value > 0)
+
+const nativeProviderLanes = computed(() => [
+  {
+    name: 'OpenAI',
+    description: t('admin.adapterProviders.native.openaiDescription'),
+    capabilities: ['Responses', 'Chat', 'Realtime', 'Models'],
+  },
+  {
+    name: 'Gemini',
+    description: t('admin.adapterProviders.native.geminiDescription'),
+    capabilities: ['GenerateContent', 'Stream', 'CLI OAuth', 'Quota'],
+  },
+  {
+    name: 'Claude',
+    description: t('admin.adapterProviders.native.claudeDescription'),
+    capabilities: ['Messages', 'Tools', 'Streaming', 'OAuth'],
+  },
+  {
+    name: 'Antigravity',
+    description: t('admin.adapterProviders.native.antigravityDescription'),
+    capabilities: ['Session', 'Model Map', 'OAuth', 'Account Pool'],
+  },
+])
 
 const operatorMetrics = computed(() => [
   { label: t('admin.adapterProviders.operator.providerHealth'), value: providerHealth.value },

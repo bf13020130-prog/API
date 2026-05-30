@@ -53,10 +53,22 @@ vi.mock('@/stores/auth', () => ({
 
 vi.mock('vue-i18n', async () => {
   const actual = await vi.importActual<typeof import('vue-i18n')>('vue-i18n')
+  const messages: Record<string, string> = {
+    'admin.accounts.fusionKicker': 'Provider Pool',
+    'admin.accounts.fusionTitle': '供应商账号池',
+    'admin.accounts.fusionDescription': 'Keep Sub2API provider accounts visible.',
+    'admin.accounts.poolLoaded': 'loaded',
+    'admin.accounts.poolFiltered': 'filtered',
+    'admin.accounts.poolHealth': '健康账号',
+    'admin.accounts.poolAttention': '需要关注',
+    'admin.accounts.poolPlatformCoverage': '平台覆盖',
+    'admin.accounts.poolRateLimited': '限流',
+    'admin.accounts.poolErrors': '异常'
+  }
   return {
     ...actual,
     useI18n: () => ({
-      t: (key: string) => key
+      t: (key: string) => messages[key] ?? key
     })
   }
 })
@@ -223,5 +235,108 @@ describe('admin AccountsView bulk edit scope', () => {
       label: 'admin.accounts.columns.createdAt',
       sortable: true
     })
+  })
+
+  it('renders a fusion provider pool overview from the loaded account rows', async () => {
+    listAccounts.mockResolvedValue({
+      items: [
+        {
+          id: 1,
+          name: 'openai-oauth',
+          platform: 'openai',
+          type: 'oauth',
+          status: 'active',
+          schedulable: true,
+          created_at: '2026-03-07T10:00:00Z',
+          updated_at: '2026-03-07T10:00:00Z'
+        },
+        {
+          id: 2,
+          name: 'claude-error',
+          platform: 'anthropic',
+          type: 'oauth',
+          status: 'error',
+          schedulable: true,
+          created_at: '2026-03-07T10:00:00Z',
+          updated_at: '2026-03-07T10:00:00Z'
+        },
+        {
+          id: 3,
+          name: 'gemini-rate-limit',
+          platform: 'gemini',
+          type: 'oauth',
+          status: 'active',
+          schedulable: true,
+          rate_limit_reset_at: new Date(Date.now() + 60_000).toISOString(),
+          created_at: '2026-03-07T10:00:00Z',
+          updated_at: '2026-03-07T10:00:00Z'
+        },
+        {
+          id: 4,
+          name: 'antigravity-off',
+          platform: 'antigravity',
+          type: 'oauth',
+          status: 'active',
+          schedulable: false,
+          created_at: '2026-03-07T10:00:00Z',
+          updated_at: '2026-03-07T10:00:00Z'
+        }
+      ],
+      total: 7,
+      page: 1,
+      page_size: 20,
+      pages: 1
+    })
+
+    const wrapper = mount(AccountsView, {
+      global: {
+        stubs: {
+          AppLayout: { template: '<div><slot /></div>' },
+          TablePageLayout: {
+            template: '<div><slot name="filters" /><slot name="table" /><slot name="pagination" /></div>'
+          },
+          DataTable: DataTableStub,
+          Pagination: true,
+          ConfirmDialog: true,
+          AccountTableActions: { template: '<div><slot name="beforeCreate" /><slot name="after" /></div>' },
+          AccountTableFilters: { template: '<div></div>' },
+          AccountBulkActionsBar: AccountBulkActionsBarStub,
+          AccountActionMenu: true,
+          ImportDataModal: true,
+          ReAuthAccountModal: true,
+          AccountTestModal: true,
+          AccountStatsModal: true,
+          ScheduledTestsPanel: true,
+          SyncFromCrsModal: true,
+          TempUnschedStatusModal: true,
+          ErrorPassthroughRulesModal: true,
+          TLSFingerprintProfilesModal: true,
+          CreateAccountModal: true,
+          EditAccountModal: true,
+          BulkEditAccountModal: BulkEditAccountModalStub,
+          PlatformTypeBadge: true,
+          AccountCapacityCell: true,
+          AccountStatusIndicator: true,
+          AccountTodayStatsCell: true,
+          AccountGroupsCell: true,
+          AccountUsageCell: true,
+          Icon: true
+        }
+      }
+    })
+
+    await flushPromises()
+
+    const text = wrapper.text()
+    expect(text).toContain('供应商账号池')
+    expect(text).toContain('健康账号')
+    expect(text).toContain('需要关注')
+    expect(text).toContain('平台覆盖')
+    expect(text).toContain('限流')
+    expect(text).toContain('异常')
+    expect(text).toContain('OpenAI')
+    expect(text).toContain('Gemini')
+    expect(text).toContain('Anthropic')
+    expect(text).toContain('Antigravity')
   })
 })

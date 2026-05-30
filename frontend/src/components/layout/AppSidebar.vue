@@ -9,12 +9,12 @@
     <!-- Logo/Brand -->
     <div class="sidebar-header" :class="{ 'sidebar-header-collapsed': sidebarCollapsed }">
       <!-- Custom Logo or Default Logo -->
-      <div class="sidebar-logo flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl shadow-glow">
+      <div class="sidebar-logo flex h-9 w-9 items-center justify-center overflow-hidden rounded-md border border-slate-200 bg-slate-950 shadow-sm dark:border-dark-700 dark:bg-primary-600">
         <img v-if="settingsLoaded" :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
       </div>
       <div class="sidebar-brand" :class="{ 'sidebar-brand-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">
-        <span class="sidebar-brand-title text-lg font-bold text-gray-900 dark:text-white">
-          {{ siteName }}
+        <span class="sidebar-brand-title text-base font-semibold text-slate-950 dark:text-white">
+          {{ displaySiteName }}
         </span>
         <!-- Version Badge -->
         <VersionBadge :version="siteVersion" />
@@ -243,6 +243,13 @@ const expandedGroups = ref<Set<string>>(new Set())
 
 // Site settings from appStore (cached, no flicker)
 const siteName = computed(() => appStore.siteName)
+const displaySiteName = computed(() => {
+  const configuredName = siteName.value.trim()
+  if (!configuredName || configuredName === 'Sub2API') {
+    return 'API Fusion'
+  }
+  return configuredName
+})
 const siteLogo = computed(() => appStore.siteLogo)
 const siteVersion = computed(() => appStore.siteVersion)
 const settingsLoaded = computed(() => appStore.publicSettingsLoaded)

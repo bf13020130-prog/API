@@ -4,10 +4,10 @@
       <!-- Title -->
       <div class="text-center">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-          {{ t('auth.createAccount') }}
+          {{ t('auth.fusionRegisterTitle') }}
         </h2>
         <p class="mt-2 text-sm text-gray-500 dark:text-dark-400">
-          {{ t('auth.signUpToStart', { siteName }) }}
+          {{ t('auth.fusionRegisterDescription', { siteName: displaySiteName }) }}
         </p>
       </div>
 
@@ -327,6 +327,7 @@ import {
   loadAffiliateReferralCode,
   resolveAffiliateReferralCode
 } from '@/utils/oauthAffiliate'
+import { DEFAULT_FUSION_SITE_NAME, resolveFusionSiteName } from '@/utils/fusionBranding'
 import type { LoginAgreementDocument } from '@/types'
 
 const { t, locale } = useI18n()
@@ -353,7 +354,7 @@ const promoCodeEnabled = ref<boolean>(true)
 const invitationCodeEnabled = ref<boolean>(false)
 const turnstileEnabled = ref<boolean>(false)
 const turnstileSiteKey = ref<string>('')
-const siteName = ref<string>('Sub2API')
+const siteName = ref<string>(DEFAULT_FUSION_SITE_NAME)
 const linuxdoOAuthEnabled = ref<boolean>(false)
 const wechatOAuthEnabled = ref<boolean>(false)
 const oidcOAuthEnabled = ref<boolean>(false)
@@ -434,6 +435,8 @@ const registrationActionDisabled = computed(
   () => isLoading.value || !settingsLoaded.value || agreementGateActive.value
 )
 
+const displaySiteName = computed(() => resolveFusionSiteName(siteName.value))
+
 watch(validationToastMessage, (value, previousValue) => {
   if (value && value !== previousValue) {
     appStore.showError(value)
@@ -461,7 +464,7 @@ onMounted(async () => {
     invitationCodeEnabled.value = settings.invitation_code_enabled
     turnstileEnabled.value = settings.turnstile_enabled
     turnstileSiteKey.value = settings.turnstile_site_key || ''
-    siteName.value = settings.site_name || 'Sub2API'
+    siteName.value = settings.site_name || DEFAULT_FUSION_SITE_NAME
     linuxdoOAuthEnabled.value = settings.linuxdo_oauth_enabled
     wechatOAuthEnabled.value = isWeChatWebOAuthEnabled(settings)
     oidcOAuthEnabled.value = settings.oidc_oauth_enabled
@@ -893,7 +896,7 @@ async function handleRegister(): Promise<void> {
     clearAffiliateReferralCode()
 
     // Show success toast
-    appStore.showSuccess(t('auth.accountCreatedSuccess', { siteName: siteName.value }))
+    appStore.showSuccess(t('auth.accountCreatedSuccess', { siteName: displaySiteName.value }))
 
     // Redirect to dashboard
     await router.push('/dashboard')

@@ -65,6 +65,15 @@ vi.mock('vue-i18n', async () => {
     'admin.adapterProviders.operator.noIssues': '运行正常',
     'admin.adapterProviders.operator.needsAttention': '需要关注',
     'admin.adapterProviders.operator.readyRoutes': '可路由供应商',
+    'admin.adapterProviders.native.kicker': 'Native Provider Lanes',
+    'admin.adapterProviders.native.title': 'Sub2API 原生供应商主航道',
+    'admin.adapterProviders.native.description': 'OpenAI / Gemini / Claude / Antigravity 保持原生链路优先，长尾供应商再进入 DB 适配器层。',
+    'admin.adapterProviders.native.routingRule': '核心供应商不走长尾适配器',
+    'admin.adapterProviders.native.nativeBadge': '原生链路',
+    'admin.adapterProviders.native.openaiDescription': 'OpenAI 兼容、Responses 和实时能力优先走 sub2api 原生实现。',
+    'admin.adapterProviders.native.geminiDescription': 'Gemini OAuth、CLI 和配额链路保留 sub2api 深度处理。',
+    'admin.adapterProviders.native.claudeDescription': 'Claude Messages、工具调用和流式回包继续由原生模块承接。',
+    'admin.adapterProviders.native.antigravityDescription': 'Antigravity 会话、模型映射和账号池能力保留在原生通道。',
     'admin.adapterProviders.observeOnly': '观察模式',
     'admin.adapterProviders.enforced': '强制模式',
     'admin.adapterProviders.enforcementEnabled': '已启用强制路由',
@@ -279,6 +288,21 @@ describe('admin AdapterProvidersView', () => {
     expect(text).toContain('WebSocket')
     expect(text).toContain('1')
     expect(text).toContain('$0.420000')
+  })
+
+  it('shows Sub2API native provider lanes before long-tail adapters', async () => {
+    const wrapper = mountView()
+
+    await flushPromises()
+
+    const text = wrapper.text()
+    expect(text).toContain('Sub2API 原生供应商主航道')
+    expect(text).toContain('OpenAI')
+    expect(text).toContain('Gemini')
+    expect(text).toContain('Claude')
+    expect(text).toContain('Antigravity')
+    expect(text).toContain('核心供应商不走长尾适配器')
+    expect(text).toContain('原生链路')
   })
 
   it('shows finalized stream and WebSocket usage markers in request audit rows', async () => {

@@ -1,8 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-dark-950">
-    <!-- Background Decoration -->
-    <div class="pointer-events-none fixed inset-0 bg-mesh-gradient"></div>
-
+  <div class="fusion-shell min-h-screen bg-slate-50 text-slate-950 dark:bg-dark-950 dark:text-slate-100">
     <!-- Sidebar -->
     <AppSidebar />
 
@@ -15,7 +12,7 @@
       <AppHeader />
 
       <!-- Main Content -->
-      <main class="p-4 md:p-6 lg:p-8">
+      <main class="px-4 py-4 md:px-5 md:py-5 lg:px-6">
         <slot />
       </main>
     </div>

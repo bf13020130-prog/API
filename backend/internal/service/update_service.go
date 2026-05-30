@@ -140,6 +140,10 @@ func (s *UpdateService) CheckUpdate(ctx context.Context, force bool) (*UpdateInf
 // PerformUpdate downloads and applies the update
 // Uses atomic file replacement pattern for safe in-place updates
 func (s *UpdateService) PerformUpdate(ctx context.Context) error {
+	if s.buildType != "release" {
+		return fmt.Errorf("official binary update is disabled for %s builds; merge upstream changes into the fusion repository and redeploy from source", s.buildType)
+	}
+
 	info, err := s.CheckUpdate(ctx, true)
 	if err != nil {
 		return err
@@ -251,6 +255,10 @@ func (s *UpdateService) PerformUpdate(ctx context.Context) error {
 
 // Rollback restores the previous version
 func (s *UpdateService) Rollback() error {
+	if s.buildType != "release" {
+		return fmt.Errorf("official binary rollback is disabled for %s builds; redeploy the fusion repository from source instead", s.buildType)
+	}
+
 	exePath, err := os.Executable()
 	if err != nil {
 		return fmt.Errorf("failed to get executable path: %w", err)

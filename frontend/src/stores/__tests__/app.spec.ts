@@ -273,6 +273,19 @@ describe('useAppStore', () => {
       expect(store.publicSettingsLoaded).toBe(true)
     })
 
+    it('把上游默认站点名映射为 fusion 默认名', () => {
+      const windowAny = window as any
+      windowAny.__APP_CONFIG__ = {
+        site_name: 'Sub2API',
+        site_logo: '',
+      }
+
+      const store = useAppStore()
+      store.initFromInjectedConfig()
+
+      expect(store.siteName).toBe('API Fusion')
+    })
+
     it('无注入配置时返回 false', () => {
       const store = useAppStore()
       const result = store.initFromInjectedConfig()

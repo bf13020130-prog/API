@@ -2,6 +2,62 @@
   <AppLayout>
     <TablePageLayout>
       <template #filters>
+        <section class="account-pool-overview mb-4">
+          <div class="account-pool-overview__main">
+            <div>
+              <p class="account-pool-overview__kicker">
+                {{ t('admin.accounts.fusionKicker') }}
+              </p>
+              <h2 class="account-pool-overview__title">
+                {{ t('admin.accounts.fusionTitle') }}
+              </h2>
+              <p class="account-pool-overview__description">
+                {{ t('admin.accounts.fusionDescription') }}
+              </p>
+            </div>
+            <div class="account-pool-overview__total">
+              <span class="account-pool-overview__total-value">{{ pagination.total || accounts.length }}</span>
+              <span class="account-pool-overview__total-label">
+                {{ pagination.total ? t('admin.accounts.poolFiltered') : t('admin.accounts.poolLoaded') }}
+              </span>
+            </div>
+          </div>
+
+          <div class="account-pool-overview__stats">
+            <div class="account-pool-stat account-pool-stat--healthy">
+              <span class="account-pool-stat__label">{{ t('admin.accounts.poolHealth') }}</span>
+              <strong>{{ accountPoolOverview.healthy }}</strong>
+            </div>
+            <div class="account-pool-stat account-pool-stat--attention">
+              <span class="account-pool-stat__label">{{ t('admin.accounts.poolAttention') }}</span>
+              <strong>{{ accountPoolOverview.attention }}</strong>
+            </div>
+            <div class="account-pool-stat">
+              <span class="account-pool-stat__label">{{ t('admin.accounts.poolRateLimited') }}</span>
+              <strong>{{ accountPoolOverview.rateLimited }}</strong>
+            </div>
+            <div class="account-pool-stat">
+              <span class="account-pool-stat__label">{{ t('admin.accounts.poolErrors') }}</span>
+              <strong>{{ accountPoolOverview.errors }}</strong>
+            </div>
+          </div>
+
+          <div class="account-pool-platforms">
+            <span class="account-pool-platforms__label">{{ t('admin.accounts.poolPlatformCoverage') }}</span>
+            <div class="account-pool-platforms__chips">
+              <span
+                v-for="platform in accountPoolOverview.platforms"
+                :key="platform.name"
+                class="account-pool-platform-chip"
+              >
+                <span class="account-pool-platform-chip__dot"></span>
+                {{ platform.label }}
+                <strong>{{ platform.count }}</strong>
+              </span>
+            </div>
+          </div>
+        </section>
+
         <div class="flex flex-wrap-reverse items-start justify-between gap-3">
           <AccountTableFilters
             v-model:searchQuery="params.search"
@@ -552,6 +608,83 @@ const todayStatsError = ref<string | null>(null)
 const todayStatsReqSeq = ref(0)
 const pendingTodayStatsRefresh = ref(false)
 const usageManualRefreshToken = ref(0)
+
+function isAccountRateLimited(account: Account): boolean {
+  const resetAt = account.rate_limit_reset_at ? new Date(account.rate_limit_reset_at).getTime() : Number.NaN
+  return Number.isFinite(resetAt) && resetAt > Date.now()
+}
+
+function isAccountTemporarilyUnschedulable(account: Account): boolean {
+  const until = account.temp_unschedulable_until ? new Date(account.temp_unschedulable_until).getTime() : Number.NaN
+  return Number.isFinite(until) && until > Date.now()
+}
+
+function isAccountOverloaded(account: Account): boolean {
+  const until = account.overload_until ? new Date(account.overload_until).getTime() : Number.NaN
+  return Number.isFinite(until) && until > Date.now()
+}
+
+function getPlatformDisplayName(platform: string): string {
+  const normalized = platform.trim()
+  if (!normalized) return '-'
+  const fallbackNames: Record<string, string> = {
+    openai: 'OpenAI',
+    anthropic: 'Anthropic',
+    claude: 'Claude',
+    gemini: 'Gemini',
+    antigravity: 'Antigravity'
+  }
+  const known = t(`admin.accounts.platforms.${normalized}`)
+  if (known && known !== `admin.accounts.platforms.${normalized}`) {
+    return known
+  }
+  if (fallbackNames[normalized]) {
+    return fallbackNames[normalized]
+  }
+  return normalized.charAt(0).toUpperCase() + normalized.slice(1)
+}
+
+const accountPoolOverview = computed(() => {
+  const platformCounts = new Map<string, number>()
+  let healthy = 0
+  let rateLimited = 0
+  let errors = 0
+  let unavailable = 0
+
+  for (const account of accounts.value) {
+    const platform = account.platform || 'unknown'
+    platformCounts.set(platform, (platformCounts.get(platform) || 0) + 1)
+
+    const isRateLimited = isAccountRateLimited(account)
+    const isUnavailable =
+      !account.schedulable ||
+      isRateLimited ||
+      isAccountTemporarilyUnschedulable(account) ||
+      isAccountOverloaded(account)
+    const hasError = account.status !== 'active'
+
+    if (isRateLimited) rateLimited += 1
+    if (hasError) errors += 1
+    if (hasError || isUnavailable) unavailable += 1
+    if (!hasError && !isUnavailable) healthy += 1
+  }
+
+  const platforms = Array.from(platformCounts.entries())
+    .map(([name, count]) => ({
+      name,
+      count,
+      label: getPlatformDisplayName(name)
+    }))
+    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label))
+
+  return {
+    healthy,
+    attention: unavailable,
+    rateLimited,
+    errors,
+    platforms
+  }
+})
 
 const buildDefaultTodayStats = (): WindowStats => ({
   requests: 0,
@@ -1676,6 +1809,231 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+.account-pool-overview {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(240, 253, 250, 0.9), rgba(255, 255, 255, 0.92) 48%, rgba(255, 251, 235, 0.9));
+  padding: 1rem;
+}
+
+.dark .account-pool-overview {
+  border-color: rgba(148, 163, 184, 0.14);
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, 0.86), rgba(17, 24, 39, 0.92) 54%, rgba(28, 25, 23, 0.88));
+}
+
+.account-pool-overview__main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.account-pool-overview__kicker {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: #0f766e;
+}
+
+.dark .account-pool-overview__kicker {
+  color: #5eead4;
+}
+
+.account-pool-overview__title {
+  margin-top: 0.25rem;
+  font-size: 1.35rem;
+  font-weight: 900;
+  line-height: 1.2;
+  color: #0f172a;
+}
+
+.dark .account-pool-overview__title {
+  color: #f8fafc;
+}
+
+.account-pool-overview__description {
+  margin-top: 0.35rem;
+  max-width: 50rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #64748b;
+}
+
+.dark .account-pool-overview__description {
+  color: #94a3b8;
+}
+
+.account-pool-overview__total {
+  min-width: 6.25rem;
+  border-radius: 8px;
+  border: 1px solid rgba(20, 184, 166, 0.2);
+  background: rgba(255, 255, 255, 0.72);
+  padding: 0.75rem;
+  text-align: right;
+}
+
+.dark .account-pool-overview__total {
+  border-color: rgba(45, 212, 191, 0.2);
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.account-pool-overview__total-value {
+  display: block;
+  font-size: 1.6rem;
+  font-weight: 900;
+  line-height: 1;
+  color: #0f766e;
+}
+
+.dark .account-pool-overview__total-value {
+  color: #5eead4;
+}
+
+.account-pool-overview__total-label {
+  margin-top: 0.35rem;
+  display: block;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.dark .account-pool-overview__total-label {
+  color: #94a3b8;
+}
+
+.account-pool-overview__stats {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.account-pool-stat {
+  min-height: 74px;
+  border-radius: 8px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.7);
+  padding: 0.75rem;
+}
+
+.dark .account-pool-stat {
+  border-color: rgba(148, 163, 184, 0.12);
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.account-pool-stat__label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.dark .account-pool-stat__label {
+  color: #94a3b8;
+}
+
+.account-pool-stat strong {
+  margin-top: 0.35rem;
+  display: block;
+  font-size: 1.55rem;
+  line-height: 1;
+  color: #0f172a;
+}
+
+.dark .account-pool-stat strong {
+  color: #f8fafc;
+}
+
+.account-pool-stat--healthy strong {
+  color: #0f766e;
+}
+
+.account-pool-stat--attention strong {
+  color: #b45309;
+}
+
+.dark .account-pool-stat--healthy strong {
+  color: #5eead4;
+}
+
+.dark .account-pool-stat--attention strong {
+  color: #fbbf24;
+}
+
+.account-pool-platforms {
+  margin-top: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.account-pool-platforms__label {
+  flex: 0 0 auto;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #475569;
+}
+
+.dark .account-pool-platforms__label {
+  color: #cbd5e1;
+}
+
+.account-pool-platforms__chips {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.account-pool-platform-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 118, 110, 0.18);
+  background: rgba(240, 253, 250, 0.82);
+  padding: 0.25rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #115e59;
+}
+
+.dark .account-pool-platform-chip {
+  border-color: rgba(94, 234, 212, 0.22);
+  background: rgba(20, 184, 166, 0.12);
+  color: #99f6e4;
+}
+
+.account-pool-platform-chip__dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+@media (max-width: 767px) {
+  .account-pool-overview__main {
+    flex-direction: column;
+  }
+
+  .account-pool-overview__total {
+    width: 100%;
+    text-align: left;
+  }
+
+  .account-pool-overview__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .account-pool-platforms {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
 .account-tools-menu-item {
   @apply flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700;
 }

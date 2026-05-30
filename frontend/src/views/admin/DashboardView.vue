@@ -7,212 +7,126 @@
       </div>
 
       <template v-else-if="stats">
-        <!-- Row 1: Core Stats -->
-        <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <!-- Total API Keys -->
-          <div class="card p-4">
-            <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-blue-100 p-2 dark:bg-blue-900/30">
-                <Icon name="key" size="md" class="text-blue-600 dark:text-blue-400" :stroke-width="2" />
-              </div>
-              <div>
-                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
-                  {{ t('admin.dashboard.apiKeys') }}
-                </p>
-                <p class="text-xl font-bold text-gray-900 dark:text-white">
-                  {{ stats.total_api_keys }}
-                </p>
-                <p class="text-xs text-green-600 dark:text-green-400">
-                  {{ stats.active_api_keys }} {{ t('common.active') }}
-                </p>
-              </div>
+        <section class="admin-fusion-hero">
+          <div class="min-w-0">
+            <div class="mb-3 flex flex-wrap items-center gap-2">
+              <span class="fusion-kicker">{{ t('admin.dashboard.fusionKicker') }}</span>
+              <span class="fusion-brand">{{ displayBrand }}</span>
+              <span v-if="stats.stats_stale" class="fusion-warning">
+                {{ t('admin.dashboard.statsStale') }}
+              </span>
             </div>
+            <h1 class="text-2xl font-semibold tracking-normal text-gray-950 dark:text-white">
+              {{ t('admin.dashboard.fusionTitle') }}
+            </h1>
+            <p class="mt-2 max-w-3xl text-sm leading-6 text-gray-600 dark:text-gray-300">
+              {{ t('admin.dashboard.fusionDescription') }}
+            </p>
           </div>
 
-          <!-- Service Accounts -->
-          <div class="card p-4">
-            <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-purple-100 p-2 dark:bg-purple-900/30">
-                <Icon name="server" size="md" class="text-purple-600 dark:text-purple-400" :stroke-width="2" />
-              </div>
-              <div>
-                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
-                  {{ t('admin.dashboard.accounts') }}
-                </p>
-                <p class="text-xl font-bold text-gray-900 dark:text-white">
-                  {{ stats.total_accounts }}
-                </p>
-                <p class="text-xs">
-                  <span class="text-green-600 dark:text-green-400"
-                    >{{ stats.normal_accounts }} {{ t('common.active') }}</span
-                  >
-                  <span v-if="stats.error_accounts > 0" class="ml-1 text-red-500"
-                    >{{ stats.error_accounts }} {{ t('common.error') }}</span
-                  >
-                </p>
-              </div>
+          <div class="fusion-trace-panel">
+            <div>
+              <span>{{ t('admin.dashboard.traceReady') }}</span>
+              <strong>trace_id</strong>
+            </div>
+            <div>
+              <span>{{ t('admin.dashboard.providerSurface') }}</span>
+              <strong>OpenAI / Gemini / Claude</strong>
             </div>
           </div>
+        </section>
 
-          <!-- Today Requests -->
-          <div class="card p-4">
-            <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-green-100 p-2 dark:bg-green-900/30">
-                <Icon name="chart" size="md" class="text-green-600 dark:text-green-400" :stroke-width="2" />
-              </div>
-              <div>
-                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
-                  {{ t('admin.dashboard.todayRequests') }}
-                </p>
-                <p class="text-xl font-bold text-gray-900 dark:text-white">
-                  {{ stats.today_requests }}
-                </p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">
-                  {{ t('common.total') }}: {{ formatNumber(stats.total_requests) }}
-                </p>
-              </div>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <article class="fusion-metric-card border-emerald-200/70 dark:border-emerald-900/60">
+            <div class="metric-topline">
+              <span>{{ t('admin.dashboard.providerPool') }}</span>
+              <Icon name="server" size="md" class="text-emerald-600 dark:text-emerald-400" :stroke-width="2" />
             </div>
-          </div>
+            <div class="mt-3 flex items-end justify-between gap-3">
+              <strong>{{ formatNumber(stats.total_accounts) }}</strong>
+              <span class="metric-badge text-emerald-700 dark:text-emerald-300">
+                {{ accountHealthPercent }}%
+              </span>
+            </div>
+            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+              {{ stats.normal_accounts }} {{ t('admin.dashboard.accountsHealthy') }}
+              <span v-if="accountAttentionCount > 0">
+                / {{ accountAttentionCount }} {{ t('admin.dashboard.accountsAttention') }}
+              </span>
+            </p>
+            <div class="metric-rail mt-4">
+              <span class="bg-emerald-500" :style="{ width: `${accountHealthPercent}%` }"></span>
+            </div>
+          </article>
 
-          <!-- New Users Today -->
-          <div class="card p-4">
-            <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-emerald-100 p-2 dark:bg-emerald-900/30">
-                <Icon name="userPlus" size="md" class="text-emerald-600 dark:text-emerald-400" :stroke-width="2" />
-              </div>
-              <div>
-                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
-                  {{ t('admin.dashboard.users') }}
-                </p>
-                <p class="text-xl font-bold text-emerald-600 dark:text-emerald-400">
-                  +{{ stats.today_new_users }}
-                </p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">
-                  {{ t('common.total') }}: {{ formatNumber(stats.total_users) }}
-                </p>
-              </div>
+          <article class="fusion-metric-card border-blue-200/70 dark:border-blue-900/60">
+            <div class="metric-topline">
+              <span>{{ t('admin.dashboard.routingPulse') }}</span>
+              <Icon name="bolt" size="md" class="text-blue-600 dark:text-blue-400" :stroke-width="2" />
             </div>
-          </div>
+            <div class="mt-3 flex items-end gap-2">
+              <strong>{{ formatTokens(stats.rpm) }}</strong>
+              <small>RPM</small>
+            </div>
+            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+              {{ formatTokens(stats.tpm) }} TPM / {{ t('admin.dashboard.routingPulseHint') }}
+            </p>
+          </article>
+
+          <article class="fusion-metric-card border-amber-200/70 dark:border-amber-900/60">
+            <div class="metric-topline">
+              <span>{{ t('admin.dashboard.costSignal') }}</span>
+              <Icon name="dollar" size="md" class="text-amber-600 dark:text-amber-400" :stroke-width="2" />
+            </div>
+            <div class="mt-3 flex items-end gap-2">
+              <strong>${{ formatCost(stats.today_actual_cost) }}</strong>
+              <small>{{ t('admin.dashboard.actual') }}</small>
+            </div>
+            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+              {{ t('admin.dashboard.accountCost') }} ${{ formatCost(stats.today_account_cost) }}
+              / {{ t('admin.dashboard.standard') }} ${{ formatCost(stats.today_cost) }}
+            </p>
+          </article>
+
+          <article class="fusion-metric-card border-rose-200/70 dark:border-rose-900/60">
+            <div class="metric-topline">
+              <span>{{ t('admin.dashboard.traceReady') }}</span>
+              <Icon name="terminal" size="md" class="text-rose-600 dark:text-rose-400" :stroke-width="2" />
+            </div>
+            <div class="mt-3 flex items-end gap-2">
+              <strong>{{ formatDuration(stats.average_duration_ms) }}</strong>
+              <small>{{ t('admin.dashboard.avgResponse') }}</small>
+            </div>
+            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+              {{ stats.active_users }} {{ t('admin.dashboard.activeUsers') }} / {{ t('admin.dashboard.traceReadyHint') }}
+            </p>
+          </article>
         </div>
 
-        <!-- Row 2: Token Stats -->
-        <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <!-- Today Tokens -->
-          <div class="card p-4">
-            <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-amber-100 p-2 dark:bg-amber-900/30">
-                <Icon name="cube" size="md" class="text-amber-600 dark:text-amber-400" :stroke-width="2" />
-              </div>
-              <div>
-                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
-                  {{ t('admin.dashboard.todayTokens') }}
-                </p>
-                <p class="text-xl font-bold text-gray-900 dark:text-white">
-                  {{ formatTokens(stats.today_tokens) }}
-                </p>
-                <p class="text-xs">
-                  <span
-                    class="text-green-600 dark:text-green-400"
-                    :title="t('admin.dashboard.actual')"
-                    >${{ formatCost(stats.today_actual_cost) }}</span
-                  >
-                  <span class="text-gray-400 dark:text-gray-500"> / </span>
-                  <span
-                    class="text-orange-500 dark:text-orange-400"
-                    :title="t('admin.dashboard.accountCost')"
-                    >${{ formatCost(stats.today_account_cost) }}</span
-                  >
-                  <span class="text-gray-400 dark:text-gray-500"> / </span>
-                  <span
-                    class="text-gray-400 dark:text-gray-500"
-                    :title="t('admin.dashboard.standard')"
-                    >${{ formatCost(stats.today_cost) }}</span
-                  >
-                </p>
-              </div>
-            </div>
+        <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <div class="ops-mini-card">
+            <Icon name="key" size="sm" class="text-blue-600 dark:text-blue-400" :stroke-width="2" />
+            <span>{{ t('admin.dashboard.apiKeys') }}</span>
+            <strong>{{ formatNumber(stats.total_api_keys) }}</strong>
+            <small>{{ stats.active_api_keys }} {{ t('common.active') }}</small>
           </div>
-
-          <!-- Total Tokens -->
-          <div class="card p-4">
-            <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-indigo-100 p-2 dark:bg-indigo-900/30">
-                <Icon name="database" size="md" class="text-indigo-600 dark:text-indigo-400" :stroke-width="2" />
-              </div>
-              <div>
-                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
-                  {{ t('admin.dashboard.totalTokens') }}
-                </p>
-                <p class="text-xl font-bold text-gray-900 dark:text-white">
-                  {{ formatTokens(stats.total_tokens) }}
-                </p>
-                <p class="text-xs">
-                  <span
-                    class="text-green-600 dark:text-green-400"
-                    :title="t('admin.dashboard.actual')"
-                    >${{ formatCost(stats.total_actual_cost) }}</span
-                  >
-                  <span class="text-gray-400 dark:text-gray-500"> / </span>
-                  <span
-                    class="text-orange-500 dark:text-orange-400"
-                    :title="t('admin.dashboard.accountCost')"
-                    >${{ formatCost(stats.total_account_cost) }}</span
-                  >
-                  <span class="text-gray-400 dark:text-gray-500"> / </span>
-                  <span
-                    class="text-gray-400 dark:text-gray-500"
-                    :title="t('admin.dashboard.standard')"
-                    >${{ formatCost(stats.total_cost) }}</span
-                  >
-                </p>
-              </div>
-            </div>
+          <div class="ops-mini-card">
+            <Icon name="chart" size="sm" class="text-emerald-600 dark:text-emerald-400" :stroke-width="2" />
+            <span>{{ t('admin.dashboard.todayRequests') }}</span>
+            <strong>{{ formatNumber(stats.today_requests) }}</strong>
+            <small>{{ t('common.total') }} {{ formatNumber(stats.total_requests) }}</small>
           </div>
-
-          <!-- Performance (RPM/TPM) -->
-          <div class="card p-4">
-            <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-violet-100 p-2 dark:bg-violet-900/30">
-                <Icon name="bolt" size="md" class="text-violet-600 dark:text-violet-400" :stroke-width="2" />
-              </div>
-              <div class="flex-1">
-                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
-                  {{ t('admin.dashboard.performance') }}
-                </p>
-                <div class="flex items-baseline gap-2">
-                  <p class="text-xl font-bold text-gray-900 dark:text-white">
-                    {{ formatTokens(stats.rpm) }}
-                  </p>
-                  <span class="text-xs text-gray-500 dark:text-gray-400">RPM</span>
-                </div>
-                <div class="flex items-baseline gap-2">
-                  <p class="text-sm font-semibold text-violet-600 dark:text-violet-400">
-                    {{ formatTokens(stats.tpm) }}
-                  </p>
-                  <span class="text-xs text-gray-500 dark:text-gray-400">TPM</span>
-                </div>
-              </div>
-            </div>
+          <div class="ops-mini-card">
+            <Icon name="cube" size="sm" class="text-indigo-600 dark:text-indigo-400" :stroke-width="2" />
+            <span>{{ t('admin.dashboard.todayTokens') }}</span>
+            <strong>{{ formatTokens(stats.today_tokens) }}</strong>
+            <small>{{ t('admin.dashboard.totalTokens') }} {{ formatTokens(stats.total_tokens) }}</small>
           </div>
-
-          <!-- Avg Response Time -->
-          <div class="card p-4">
-            <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-rose-100 p-2 dark:bg-rose-900/30">
-                <Icon name="clock" size="md" class="text-rose-600 dark:text-rose-400" :stroke-width="2" />
-              </div>
-              <div>
-                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
-                  {{ t('admin.dashboard.avgResponse') }}
-                </p>
-                <p class="text-xl font-bold text-gray-900 dark:text-white">
-                  {{ formatDuration(stats.average_duration_ms) }}
-                </p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">
-                  {{ stats.active_users }} {{ t('admin.dashboard.activeUsers') }}
-                </p>
-              </div>
-            </div>
+          <div class="ops-mini-card">
+            <Icon name="users" size="sm" class="text-teal-600 dark:text-teal-400" :stroke-width="2" />
+            <span>{{ t('admin.dashboard.users') }}</span>
+            <strong>+{{ formatNumber(stats.today_new_users) }}</strong>
+            <small>{{ t('common.total') }} {{ formatNumber(stats.total_users) }}</small>
           </div>
         </div>
 
@@ -379,6 +293,24 @@ const granularity = ref<'day' | 'hour'>('hour')
 const defaultRange = getLast24HoursRangeDates()
 const startDate = ref(defaultRange.start)
 const endDate = ref(defaultRange.end)
+
+const displayBrand = computed(() => {
+  const configuredName = appStore.siteName?.trim?.() || ''
+  if (!configuredName || configuredName.toLowerCase() === 'sub2api') {
+    return 'API Fusion'
+  }
+  return configuredName
+})
+
+const accountAttentionCount = computed(() => {
+  if (!stats.value) return 0
+  return stats.value.error_accounts + stats.value.ratelimit_accounts + stats.value.overload_accounts
+})
+
+const accountHealthPercent = computed(() => {
+  if (!stats.value?.total_accounts) return 0
+  return Math.round((stats.value.normal_accounts / stats.value.total_accounts) * 100)
+})
 
 // Granularity options for Select component
 const granularityOptions = computed(() => [
@@ -698,4 +630,90 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.admin-fusion-hero {
+  @apply flex flex-col gap-5 rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-950 lg:flex-row lg:items-center lg:justify-between;
+}
+
+.fusion-kicker,
+.fusion-brand,
+.fusion-warning,
+.metric-badge {
+  @apply inline-flex items-center rounded-md border px-2 py-1 text-xs font-semibold;
+}
+
+.fusion-kicker {
+  @apply border-gray-300 bg-gray-100 text-gray-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200;
+}
+
+.fusion-brand {
+  @apply border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900/60 dark:bg-blue-950/50 dark:text-blue-300;
+}
+
+.fusion-warning {
+  @apply border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300;
+}
+
+.fusion-trace-panel {
+  @apply grid min-w-full grid-cols-2 gap-2 rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-800 dark:bg-gray-900/60 sm:min-w-[360px];
+}
+
+.fusion-trace-panel div {
+  @apply min-w-0 rounded-md bg-white px-3 py-2 dark:bg-gray-950/70;
+}
+
+.fusion-trace-panel span {
+  @apply block text-[11px] font-medium text-gray-500 dark:text-gray-400;
+}
+
+.fusion-trace-panel strong {
+  @apply mt-1 block truncate text-sm font-semibold text-gray-900 dark:text-white;
+}
+
+.fusion-metric-card {
+  @apply rounded-lg border bg-white p-4 shadow-sm dark:bg-gray-950;
+}
+
+.metric-topline {
+  @apply flex items-center justify-between gap-3 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400;
+}
+
+.fusion-metric-card strong {
+  @apply text-2xl font-semibold tracking-normal text-gray-950 dark:text-white;
+}
+
+.fusion-metric-card small {
+  @apply pb-1 text-xs font-medium text-gray-500 dark:text-gray-400;
+}
+
+.metric-badge {
+  @apply border-current bg-transparent;
+}
+
+.metric-rail {
+  @apply h-1.5 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800;
+}
+
+.metric-rail span {
+  @apply block h-full rounded-full transition-all;
+}
+
+.ops-mini-card {
+  @apply grid min-h-[104px] grid-cols-[auto_1fr] gap-x-2 gap-y-1 rounded-lg border border-gray-200 bg-white p-3 shadow-sm dark:border-gray-800 dark:bg-gray-950;
+}
+
+.ops-mini-card > svg {
+  @apply row-span-3 mt-0.5;
+}
+
+.ops-mini-card span {
+  @apply text-xs font-medium text-gray-500 dark:text-gray-400;
+}
+
+.ops-mini-card strong {
+  @apply text-lg font-semibold text-gray-950 dark:text-white;
+}
+
+.ops-mini-card small {
+  @apply text-xs text-gray-500 dark:text-gray-400;
+}
 </style>

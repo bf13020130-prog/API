@@ -34,10 +34,20 @@ vi.mock('vue-router', () => ({
 
 vi.mock('vue-i18n', async () => {
   const actual = await vi.importActual<typeof import('vue-i18n')>('vue-i18n')
+  const messages: Record<string, string> = {
+    'admin.dashboard.fusionKicker': 'Fusion Ops Center',
+    'admin.dashboard.fusionTitle': '融合运维中心',
+    'admin.dashboard.fusionDescription': '保留 Sub2API 账号池与供应商接入能力，叠加请求追踪、成本观测和运营视图。',
+    'admin.dashboard.providerPool': '供应商账号池',
+    'admin.dashboard.traceReady': '请求追踪就绪',
+    'admin.dashboard.costSignal': '成本信号',
+    'admin.dashboard.routingPulse': '路由脉冲',
+    'admin.dashboard.accountsHealthy': '健康账号'
+  }
   return {
     ...actual,
     useI18n: () => ({
-      t: (key: string) => key
+      t: (key: string) => messages[key] ?? key
     })
   }
 })
@@ -71,6 +81,7 @@ const createDashboardStats = (): DashboardStats => ({
   total_tokens: 0,
   total_cost: 0,
   total_actual_cost: 0,
+  total_account_cost: 0,
   today_requests: 0,
   today_input_tokens: 0,
   today_output_tokens: 0,
@@ -79,6 +90,7 @@ const createDashboardStats = (): DashboardStats => ({
   today_tokens: 0,
   today_cost: 0,
   today_actual_cost: 0,
+  today_account_cost: 0,
   average_duration_ms: 0,
   uptime: 0,
   rpm: 0,
@@ -139,5 +151,51 @@ describe('admin DashboardView', () => {
       end_date: formatLocalDate(now),
       granularity: 'hour'
     }))
+  })
+
+  it('renders the fusion operations shell with provider, tracing, and cost signals', async () => {
+    getSnapshotV2.mockResolvedValue({
+      stats: {
+        ...createDashboardStats(),
+        total_accounts: 8,
+        normal_accounts: 6,
+        error_accounts: 1,
+        ratelimit_accounts: 1,
+        today_requests: 128,
+        today_tokens: 24000,
+        today_actual_cost: 3.2,
+        today_account_cost: 1.4,
+        rpm: 24,
+        tpm: 9500,
+        average_duration_ms: 340
+      },
+      trend: [],
+      models: []
+    })
+
+    const wrapper = mount(DashboardView, {
+      global: {
+        stubs: {
+          AppLayout: { template: '<div><slot /></div>' },
+          LoadingSpinner: true,
+          Icon: true,
+          DateRangePicker: true,
+          Select: true,
+          ModelDistributionChart: true,
+          TokenUsageTrend: true,
+          Line: true
+        }
+      }
+    })
+
+    await flushPromises()
+
+    const text = wrapper.text()
+    expect(text).toContain('融合运维中心')
+    expect(text).toContain('供应商账号池')
+    expect(text).toContain('请求追踪就绪')
+    expect(text).toContain('成本信号')
+    expect(text).toContain('路由脉冲')
+    expect(text).toContain('健康账号')
   })
 })

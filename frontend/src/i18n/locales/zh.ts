@@ -10,13 +10,17 @@ export default {
     login: '登录',
     getStarted: '立即开始',
     goToDashboard: '进入控制台',
+    fusionSubtitle: '保留 Sub2API 的核心账号池与供应商接入能力，叠加更清爽的融合控制台、请求追踪和运营视图。',
     // 新增：面向用户的价值主张
     heroSubtitle: '一个密钥，畅用多个 AI 模型',
     heroDescription: '无需管理多个订阅账号，一站式接入 Claude、GPT、Gemini 等主流 AI 服务',
     tags: {
       subscriptionToApi: '订阅转 API',
       stickySession: '会话保持',
-      realtimeBilling: '按量计费'
+      realtimeBilling: '按量计费',
+      accountPool: '账号池核心',
+      smartRouting: '智能路由',
+      requestTracing: '请求追踪'
     },
     // 用户痛点区块
     painPoints: {
@@ -51,7 +55,13 @@ export default {
       multiAccount: '稳定可靠',
       multiAccountDesc: '智能调度多个上游账号，自动切换和负载均衡，告别频繁报错。',
       balanceQuota: '用多少付多少',
-      balanceQuotaDesc: '按实际使用量计费，支持设置配额上限，团队用量一目了然。'
+      balanceQuotaDesc: '按实际使用量计费，支持设置配额上限，团队用量一目了然。',
+      sub2apiCore: 'Sub2API 核心',
+      sub2apiCoreDesc: '保留 OpenAI、Gemini、Claude、Codex、Antigravity 等账号池、OAuth 和供应商接入能力。',
+      fusionConsole: '融合控制台',
+      fusionConsoleDesc: '把渠道、账号、分组、用量和计费放进更紧凑的运营界面，适合长期管理。',
+      traceableOps: '可追踪运维',
+      traceableOpsDesc: '请求关联 ID、错误上下文和运行状态保留下来，用户请求失败时能快速定位根因。'
     },
     // 优势对比
     comparison: {
@@ -400,6 +410,21 @@ export default {
     signingIn: '登录中...',
     createAccount: '创建账户',
     signUpToStart: '注册以开始使用 {siteName}',
+    fusionLoginTitle: '登录 API Fusion',
+    fusionLoginDescription: '进入融合控制台，管理账号池、路由、额度和请求追踪。',
+    fusionRegisterTitle: '创建 API Fusion 账户',
+    fusionRegisterDescription: '加入 {siteName}，开始使用供应商账号池、智能路由和可追踪调用。',
+    layout: {
+      kicker: 'Fusion Access',
+      subtitle: 'Sub2API 核心就绪，API Fusion 外壳接管登录入口与运维体验。',
+      providerPool: '供应商账号池',
+      providerPoolDesc: 'OpenAI / Gemini / Claude 深度接入',
+      routing: '自适应路由',
+      routingDesc: '分组、渠道、额度统一调度',
+      tracing: '请求追踪',
+      tracingDesc: '失败调用可按链路快速定位',
+      consoleReady: '控制台就绪'
+    },
     signUp: '注册',
     processing: '处理中...',
     continue: '继续',
@@ -1395,6 +1420,19 @@ export default {
     dashboard: {
       title: '管理控制台',
       description: '系统概览与统计数据',
+      fusionKicker: 'Fusion Ops Center',
+      fusionTitle: '融合运维中心',
+      fusionDescription: '保留 Sub2API 的账号池、供应商接入和调度能力，叠加请求追踪、成本观测和更清爽的运营视图。',
+      statsStale: '统计延迟',
+      providerSurface: '供应商能力面',
+      providerPool: '供应商账号池',
+      accountsHealthy: '健康账号',
+      accountsAttention: '需关注',
+      routingPulse: '路由脉冲',
+      routingPulseHint: '近 5 分钟吞吐',
+      costSignal: '成本信号',
+      traceReady: '请求追踪就绪',
+      traceReadyHint: '失败可回溯',
       apiKeys: 'API 密钥',
       totalApiKeys: 'API 密钥总数',
       activeApiKeys: '活跃密钥',
@@ -2967,6 +3005,17 @@ export default {
       loadFailed: '加载适配器诊断失败',
       emptyTitle: '暂无适配器供应商',
       emptyDescription: '当前未配置长尾适配器供应商，所有核心供应商继续走 sub2api 原生链路。',
+      native: {
+        kicker: 'Native Provider Lanes',
+        title: 'Sub2API 原生供应商主航道',
+        description: 'OpenAI、Gemini、Claude、Antigravity 继续走 sub2api 深度适配、OAuth、账号池和配额链路；DB 适配器只承接长尾供应商扩展。',
+        routingRule: '核心供应商不走长尾适配器',
+        nativeBadge: '原生链路',
+        openaiDescription: 'OpenAI 兼容、Responses、Realtime 和模型接口优先走原生实现。',
+        geminiDescription: 'Gemini OAuth、CLI、GenerateContent 和配额状态由原生链路处理。',
+        claudeDescription: 'Claude Messages、工具调用、流式回包和账号恢复保持原生能力。',
+        antigravityDescription: 'Antigravity 会话、模型映射、OAuth 和账号池能力保留在原生通道。'
+      },
       operator: {
         title: '适配器运营驾驶舱',
         subtitle: '汇总供应商健康、路由策略、请求失败、流式结算和 WebSocket 长尾流量。',
@@ -3204,6 +3253,16 @@ export default {
     accounts: {
       title: '账号管理',
       description: '管理 AI 平台账号和 Cookie',
+      fusionKicker: 'Provider Pool',
+      fusionTitle: '供应商账号池',
+      fusionDescription: '保留 Sub2API 账号池、OAuth 和供应商接入能力，把可调度、限流、异常和平台覆盖放在第一屏。',
+      poolLoaded: '当前页',
+      poolFiltered: '匹配账号',
+      poolHealth: '健康账号',
+      poolAttention: '需要关注',
+      poolPlatformCoverage: '平台覆盖',
+      poolRateLimited: '限流',
+      poolErrors: '异常',
       createAccount: '添加账号',
       autoRefresh: '自动刷新',
       enableAutoRefresh: '启用自动刷新',
@@ -6794,6 +6853,12 @@ export default {
   version: {
     currentVersion: '当前版本',
     latestVersion: '最新版本',
+    upstreamVersion: '上游版本',
+    fusionBuild: '融合构建',
+    officialUpdateDisabled: '官方覆盖更新已禁用',
+    upstreamUpdateAvailable: 'Sub2API 上游有新版本',
+    manualMergeHint: '当前是二开融合版，请在仓库中合并上游代码、跑测试后再重新部署，避免覆盖自定义 UI 和适配层。',
+    viewUpstreamRelease: '查看上游发布',
     upToDate: '已是最新版本',
     updateAvailable: '有新版本可用！',
     releaseNotes: '更新日志',
@@ -6902,9 +6967,9 @@ export default {
     // Admin tour steps
     admin: {
       welcome: {
-        title: '👋 欢迎使用 Sub2API',
+        title: '👋 欢迎使用 API Fusion',
         description:
-          '<div style="line-height: 1.8;"><p style="margin-bottom: 16px;">Sub2API 是一个强大的 AI 服务中转平台，让您轻松管理和分发 AI 服务。</p><p style="margin-bottom: 12px;"><b>🎯 核心功能：</b></p><ul style="margin-left: 20px; margin-bottom: 16px;"><li>📦 <b>分组管理</b> - 创建不同的服务套餐（VIP、免费试用等）</li><li>🔗 <b>账号池</b> - 连接多个上游 AI 服务商账号</li><li>🔑 <b>密钥分发</b> - 为用户生成独立的 API Key</li><li>💰 <b>计费管理</b> - 灵活的费率和配额控制</li></ul><p style="color: #10b981; font-weight: 600;">接下来，我们将用 3 分钟带您完成首次配置 →</p></div>',
+          '<div style="line-height: 1.8;"><p style="margin-bottom: 16px;">API Fusion 是面向供应商账号池、路由调度和请求追踪的融合控制台，保留 Sub2API 的后端核心能力，同时强化运营视图。</p><p style="margin-bottom: 12px;"><b>🎯 核心工作台：</b></p><ul style="margin-left: 20px; margin-bottom: 16px;"><li>📦 <b>分组策略</b> - 管理不同服务套餐和倍率</li><li>🔗 <b>供应商账号池</b> - 接入并调度多个上游 AI 服务商账号</li><li>🔑 <b>密钥分发</b> - 为用户生成独立 API Key</li><li>📊 <b>追踪与成本</b> - 结合请求日志、Token 和账号成本做排障</li></ul><p style="color: #10b981; font-weight: 600;">接下来，我们将用 3 分钟完成首次运营配置 →</p></div>',
         nextBtn: '开始配置 🚀',
         prevBtn: '跳过'
       },
@@ -7023,9 +7088,9 @@ export default {
     // User tour steps
     user: {
       welcome: {
-        title: '👋 欢迎使用 Sub2API',
+        title: '👋 欢迎使用 API Fusion',
         description:
-          '<div style="line-height: 1.8;"><p style="margin-bottom: 16px;">您好！欢迎来到 Sub2API AI 服务平台。</p><p style="margin-bottom: 12px;"><b>🎯 快速开始：</b></p><ul style="margin-left: 20px; margin-bottom: 16px;"><li>🔑 创建 API 密钥</li><li>📋 复制密钥到您的应用</li><li>🚀 开始使用 AI 服务</li></ul><p style="color: #10b981; font-weight: 600;">只需 1 分钟，让我们开始吧 →</p></div>',
+          '<div style="line-height: 1.8;"><p style="margin-bottom: 16px;">API Fusion 为您提供统一的 AI API 接入口，管理员在后台维护供应商账号池和路由策略。</p><p style="margin-bottom: 12px;"><b>🎯 快速开始：</b></p><ul style="margin-left: 20px; margin-bottom: 16px;"><li>🔑 创建 API 密钥</li><li>📋 复制密钥到您的应用</li><li>🚀 使用兼容 OpenAI 的调用方式接入模型</li></ul><p style="color: #10b981; font-weight: 600;">只需 1 分钟，让我们开始吧 →</p></div>',
         nextBtn: '开始 🚀',
         prevBtn: '跳过'
       },

@@ -10,13 +10,17 @@ export default {
     login: 'Login',
     getStarted: 'Get Started',
     goToDashboard: 'Go to Dashboard',
+    fusionSubtitle: 'Keep Sub2API account-pool and provider integration strength, with a cleaner fusion console, request tracing and operations views.',
     // User-focused value proposition
     heroSubtitle: 'One Key, All AI Models',
     heroDescription: 'No need to manage multiple subscriptions. Access Claude, GPT, Gemini and more with a single API key',
     tags: {
       subscriptionToApi: 'Subscription to API',
       stickySession: 'Session Persistence',
-      realtimeBilling: 'Pay As You Go'
+      realtimeBilling: 'Pay As You Go',
+      accountPool: 'Account Pool Core',
+      smartRouting: 'Smart Routing',
+      requestTracing: 'Request Tracing'
     },
     // Pain points section
     painPoints: {
@@ -51,7 +55,13 @@ export default {
       multiAccount: 'Always Reliable',
       multiAccountDesc: 'Smart routing across multiple upstream accounts with automatic failover. Say goodbye to errors.',
       balanceQuota: 'Pay What You Use',
-      balanceQuotaDesc: 'Usage-based billing with quota limits. Full visibility into team consumption.'
+      balanceQuotaDesc: 'Usage-based billing with quota limits. Full visibility into team consumption.',
+      sub2apiCore: 'Sub2API Core',
+      sub2apiCoreDesc: 'Keep account pools, OAuth and provider integration for OpenAI, Gemini, Claude, Codex and Antigravity.',
+      fusionConsole: 'Fusion Console',
+      fusionConsoleDesc: 'Channels, accounts, groups, usage and billing live in a tighter operations surface.',
+      traceableOps: 'Traceable Ops',
+      traceableOpsDesc: 'Correlation IDs, error context and runtime state stay available so failed user requests can be diagnosed quickly.'
     },
     // Comparison section
     comparison: {
@@ -400,6 +410,21 @@ export default {
     signingIn: 'Signing in...',
     createAccount: 'Create Account',
     signUpToStart: 'Sign up to start using {siteName}',
+    fusionLoginTitle: 'Sign in to API Fusion',
+    fusionLoginDescription: 'Enter the fusion console for account pools, routing, quota and request tracing.',
+    fusionRegisterTitle: 'Create an API Fusion account',
+    fusionRegisterDescription: 'Join {siteName} and start with provider pools, adaptive routing and traceable calls.',
+    layout: {
+      kicker: 'Fusion Access',
+      subtitle: 'Sub2API core online, API Fusion shell ready for sign-in and operations.',
+      providerPool: 'Provider pool',
+      providerPoolDesc: 'Deep OpenAI / Gemini / Claude integrations',
+      routing: 'Adaptive routing',
+      routingDesc: 'Groups, channels and quotas',
+      tracing: 'Request tracing',
+      tracingDesc: 'Correlate failed calls quickly',
+      consoleReady: 'Console ready'
+    },
     signUp: 'Sign up',
     processing: 'Processing...',
     continue: 'Continue',
@@ -1391,6 +1416,19 @@ export default {
     dashboard: {
       title: 'Admin Dashboard',
       description: 'System overview and real-time statistics',
+      fusionKicker: 'Fusion Ops Center',
+      fusionTitle: 'Fusion Operations Center',
+      fusionDescription: 'Keeps the Sub2API account pool, provider onboarding, and routing core while adding request tracing, cost visibility, and a cleaner operations console.',
+      statsStale: 'Stats delayed',
+      providerSurface: 'Provider surface',
+      providerPool: 'Provider account pool',
+      accountsHealthy: 'healthy accounts',
+      accountsAttention: 'need attention',
+      routingPulse: 'Routing pulse',
+      routingPulseHint: 'last 5 min throughput',
+      costSignal: 'Cost signal',
+      traceReady: 'Request tracing ready',
+      traceReadyHint: 'failures are traceable',
       apiKeys: 'API Keys',
       accounts: 'Accounts',
       users: 'Users',
@@ -2890,6 +2928,17 @@ export default {
       loadFailed: 'Failed to load adapter diagnostics',
       emptyTitle: 'No adapter providers',
       emptyDescription: 'No long-tail adapter providers are configured. Core providers continue through native sub2api routes.',
+      native: {
+        kicker: 'Native Provider Lanes',
+        title: 'Sub2API Native Provider Lanes',
+        description: 'OpenAI, Gemini, Claude, and Antigravity continue through Sub2API native adapters, OAuth, account-pool, and quota paths. DB adapters are reserved for long-tail provider expansion.',
+        routingRule: 'Core providers bypass long-tail adapters',
+        nativeBadge: 'Native lane',
+        openaiDescription: 'OpenAI-compatible, Responses, Realtime, and model endpoints stay on the native path.',
+        geminiDescription: 'Gemini OAuth, CLI, GenerateContent, and quota state stay on the native path.',
+        claudeDescription: 'Claude Messages, tool calls, streaming, and account recovery stay native.',
+        antigravityDescription: 'Antigravity sessions, model mapping, OAuth, and account-pool capabilities stay native.'
+      },
       operator: {
         title: 'Adapter Operator Cockpit',
         subtitle: 'Summarizes provider health, route policies, request failures, stream reconciliation, and WebSocket long-tail traffic.',
@@ -3128,6 +3177,16 @@ export default {
     accounts: {
       title: 'Account Management',
       description: 'Manage AI platform accounts and credentials',
+      fusionKicker: 'Provider Pool',
+      fusionTitle: 'Provider Account Pool',
+      fusionDescription: 'Keep Sub2API account-pool, OAuth and provider integration strengths visible: schedulable capacity, rate limits, errors and platform coverage stay above the table.',
+      poolLoaded: 'loaded',
+      poolFiltered: 'matched',
+      poolHealth: 'Healthy accounts',
+      poolAttention: 'Need attention',
+      poolPlatformCoverage: 'Platform coverage',
+      poolRateLimited: 'Rate limited',
+      poolErrors: 'Errors',
       createAccount: 'Create Account',
       autoRefresh: 'Auto Refresh',
       enableAutoRefresh: 'Enable auto refresh',
@@ -6637,6 +6696,12 @@ export default {
   version: {
     currentVersion: 'Current Version',
     latestVersion: 'Latest Version',
+    upstreamVersion: 'Upstream Version',
+    fusionBuild: 'Fusion Build',
+    officialUpdateDisabled: 'Official overwrite updates are disabled',
+    upstreamUpdateAvailable: 'New Sub2API upstream version available',
+    manualMergeHint: 'This is a customized fusion build. Merge upstream changes in the repository, run tests, then redeploy from source to avoid overwriting custom UI and adapters.',
+    viewUpstreamRelease: 'View upstream release',
     upToDate: "You're running the latest version.",
     updateAvailable: 'A new version is available!',
     releaseNotes: 'Release Notes',
@@ -6747,8 +6812,8 @@ export default {
     // Admin tour steps
     admin: {
       welcome: {
-        title: '👋 Welcome to Sub2API',
-        description: '<div style="line-height: 1.8;"><p style="margin-bottom: 16px;">Sub2API is a powerful AI service gateway platform that helps you easily manage and distribute AI services.</p><p style="margin-bottom: 12px;"><b>🎯 Core Features:</b></p><ul style="margin-left: 20px; margin-bottom: 16px;"><li>📦 <b>Group Management</b> - Create service tiers (VIP, Free Trial, etc.)</li><li>🔗 <b>Account Pool</b> - Connect multiple upstream AI service accounts</li><li>🔑 <b>Key Distribution</b> - Generate independent API Keys for users</li><li>💰 <b>Billing Control</b> - Flexible rate and quota management</li></ul><p style="color: #10b981; font-weight: 600;">Let\'s complete the initial setup in 3 minutes →</p></div>',
+        title: '👋 Welcome to API Fusion',
+        description: '<div style="line-height: 1.8;"><p style="margin-bottom: 16px;">API Fusion is an operations console for provider account pools, routing, and request tracing. It keeps the Sub2API backend core while adding clearer operating views.</p><p style="margin-bottom: 12px;"><b>🎯 Core Workspace:</b></p><ul style="margin-left: 20px; margin-bottom: 16px;"><li>📦 <b>Group Strategy</b> - Manage service tiers and rates</li><li>🔗 <b>Provider Account Pool</b> - Connect and route multiple upstream AI accounts</li><li>🔑 <b>Key Distribution</b> - Generate independent API keys for users</li><li>📊 <b>Tracing and Cost</b> - Debug with request logs, tokens, and account cost</li></ul><p style="color: #10b981; font-weight: 600;">Let\'s complete the initial operations setup in 3 minutes →</p></div>',
         nextBtn: 'Start Setup 🚀',
         prevBtn: 'Skip'
       },
@@ -6847,8 +6912,8 @@ export default {
     // User tour steps
     user: {
       welcome: {
-        title: '👋 Welcome to Sub2API',
-        description: '<div style="line-height: 1.8;"><p style="margin-bottom: 16px;">Hello! Welcome to the Sub2API AI service platform.</p><p style="margin-bottom: 12px;"><b>🎯 Quick Start:</b></p><ul style="margin-left: 20px; margin-bottom: 16px;"><li>🔑 Create API Key</li><li>📋 Copy key to your application</li><li>🚀 Start using AI services</li></ul><p style="color: #10b981; font-weight: 600;">Just 1 minute, let\'s get started →</p></div>',
+        title: '👋 Welcome to API Fusion',
+        description: '<div style="line-height: 1.8;"><p style="margin-bottom: 16px;">API Fusion gives you one AI API entrypoint while administrators maintain the provider account pool and routing strategy behind it.</p><p style="margin-bottom: 12px;"><b>🎯 Quick Start:</b></p><ul style="margin-left: 20px; margin-bottom: 16px;"><li>🔑 Create API Key</li><li>📋 Copy key to your application</li><li>🚀 Connect models through an OpenAI-compatible API</li></ul><p style="color: #10b981; font-weight: 600;">Just 1 minute, let\'s get started →</p></div>',
         nextBtn: 'Start 🚀',
         prevBtn: 'Skip'
       },
